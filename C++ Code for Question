@@ -1,0 +1,181 @@
+// Code for the Mid Term Exam Question "Hospital Management Queue System"
+
+#include <iostream>
+using namespace std;
+
+class Node{
+    public:
+    int patientid;
+    Node *prev , *next;
+    Node(int id){
+        patientid = id;
+        prev = nullptr;
+        next = nullptr;
+    }
+};
+
+class ERQueue{
+    private:
+    Node *head, *tail;
+    int size;
+    public:
+    ERQueue(){
+        head = nullptr;
+        tail = nullptr;
+        size = 0;
+    }
+    
+    void insertBeg(int patientid){
+        Node *newNode = new Node (patientid);
+        if (head==nullptr){
+            head = newNode;
+            tail = newNode;
+        }
+        
+        else{
+            newNode->next = head;
+            head->prev = newNode;
+            head = newNode;
+        }
+        
+        size++;
+        
+        cout<<"Patient having id "<<patientid<<" has been added "<<endl;
+    }
+    
+    void insertAtEnd(int patientid){
+        Node *newNode = new Node (patientid);
+        
+        if (tail==nullptr){
+            head = newNode;
+            tail = newNode;
+        }
+        
+        else{
+            newNode->prev= tail;
+            tail->next= newNode;
+            tail = newNode;
+        }
+        size++;
+        
+        cout<<"Patient having id "<<patientid<<" added to end "<<endl;
+    }
+    
+    void insertAtPos(int patientid, int pos){
+        if (pos<1){
+            cout<<"Invalid position "<<endl;
+            return;
+        }
+        
+        if (pos ==1 ){
+            insertBeg(patientid);
+            return;
+        }
+        
+        if (pos > size + 1){
+            cout<<"Out of range position "<<endl;
+            insertAtEnd(patientid);
+            return;
+        }
+        
+        Node *newNode= new Node(patientid);
+        if (pos==size+1){
+            insertAtEnd(patientid);
+            return;
+        }
+        
+        Node* current = head;
+        int currentPos = 1;
+        
+        while (currentPos < pos - 1 && current != nullptr) {
+            current = current->next;
+            currentPos++;
+        }
+        
+        if (current != nullptr && current->next != nullptr) {
+            newNode->next = current->next;
+            newNode->prev = current;
+            current->next->prev = newNode;
+            current->next = newNode;
+            
+            size++;
+            cout << "Patient " << patientid << " inserted at specific position " << pos << endl;
+        }
+    }
+    
+    void delFromBeg(){
+        if (head==nullptr){
+            cout<<"Error "<<endl;
+            return;
+        }
+        
+        int removeid= head->patientid;
+        
+        if (head==tail){
+            delete head;
+            head=nullptr;
+            tail=nullptr;
+        }
+        
+        else{
+            Node *temp= head;
+            head= head->next;
+            head->prev=nullptr;
+            delete temp;
+        }
+        
+        size--;
+        
+        cout<<"Patient having id "<<removeid<<" has been treated and been removed from list "<<endl;
+    }
+    
+    void display() {
+        if (head == nullptr) {
+            cout << "ER Queue is empty." << endl;
+            return;
+        }
+        
+        cout << "---Current ER List---" << endl;
+        cout << "Position ----- Patient ID" << endl;
+        
+        Node* current = head;
+        int pos = 1;
+        while (current != nullptr) {
+            cout << "   " << pos << "     |    " << current->patientid << endl;
+            current = current->next;
+            pos++;
+        }
+        cout << "Total patients: "<<size<< endl;
+    }   
+    
+    ~ERQueue() {
+        Node* current = head;
+        while (current != nullptr) {
+            Node* temp = current;
+            current = current->next;
+            delete temp;
+        }
+    }
+};
+int main(){
+    
+    ERQueue erqueue;
+    
+    erqueue.insertAtEnd(10);
+    erqueue.display();
+    
+    erqueue.insertBeg(40);
+    erqueue.display();
+    
+    erqueue.insertAtEnd(50);
+    erqueue.insertAtEnd(60);
+    erqueue.display();
+    
+    erqueue.insertAtPos(75, 3);
+    erqueue.display();
+    
+    erqueue.delFromBeg();
+    erqueue.display();
+
+    return 0;
+}
